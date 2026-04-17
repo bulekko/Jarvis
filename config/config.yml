@@ -1,4 +1,4 @@
-ELEVEN_LABS_API_KEY: "sk_4a80be3737b24ac687f8000f048b05ca1d1e75bf36e21cfd"
+ELEVEN_LABS_API_KEY: ""
 
 Jarvis:
   prefix: "Jarvis"
@@ -6,7 +6,7 @@ Jarvis:
   no_speech_timeout: 15
 
 Setup:
-  microphone_id: 2
+  microphone_id: 1
 
 utils:
-  debug: true
+  debug: false
