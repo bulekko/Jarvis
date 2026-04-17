@@ -61,3 +61,5 @@ class State:
                 self.deactivate()
                 return True
         return False
+    
+state = State()

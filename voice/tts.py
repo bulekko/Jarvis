@@ -2,6 +2,7 @@ from elevenlabs.client import ElevenLabs
 from elevenlabs.play import play
 from yaml import safe_load
 from pathlib import Path
+from core.state import state
 
 BASE_DIR = Path(__file__).parent.parent
 
@@ -26,4 +27,6 @@ def speak(text: str):
         output_format="mp3_44100_128",
     )
 
+    state.start_speaking()
     play(audio)
+    state.stop_speaking()

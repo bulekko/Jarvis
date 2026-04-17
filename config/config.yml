@@ -3,7 +3,6 @@ ELEVEN_LABS_API_KEY: "sk_4a80be3737b24ac687f8000f048b05ca1d1e75bf36e21cfd"
 Jarvis:
   prefix: "Jarvis"
   wake_word: "wake up Jarvis"
-  sleep_word: "shutdown"
   no_speech_timeout: 15
 
 Setup:
