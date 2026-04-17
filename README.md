@@ -1,4 +1,4 @@
-# 🤖 Jarvis
+# Jarvis
 
 Jarvis is a voice-controlled personal assistant for automating daily tasks on Windows. Say the wake word, give a command — Jarvis handles the rest.
 
