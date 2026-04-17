@@ -346,7 +346,7 @@ Available tools:
 - shutup ("tool": "shutup")
 - open_youtube
 - clip (aka. "Javis, clip that shit")
-- open_github
+- open_github ("tool": "open_github")
 - open_unityhub
 - open_medal
 - clear (aka. "clean it up")
@@ -354,7 +354,7 @@ Available tools:
 - open_vscode (aka. "open Visual Studio")
 - open_github_desktop
 - open_gaming_setup
-- open_coding_setup
+- open_coding_setup ("tool": "open_coding_setup")
 - open_unity_setup
 
 If no tool matches, return:
