@@ -6,6 +6,7 @@ from yaml import safe_load
 from pathlib import Path
 from core.state import state
 import pygetwindow as gw
+from urllib.parse import quote
 import pywinauto
 import subprocess
 import webbrowser
@@ -113,6 +114,16 @@ def open_or_focus_url(url: str, sleep_time: int = 6):
     else:
         webbrowser.open_new_tab(url)
         time.sleep(sleep_time)
+
+
+def build_search_url(query: str, engine: str = "google") -> str:
+    engines = {
+        "google": "https://www.google.com/search?q=",
+        "youtube": "https://www.youtube.com/results?search_query=",
+        "bing": "https://www.bing.com/search?q=",
+    }
+    base = engines.get(engine, engines["google"])
+    return base + quote(query)
 
 
 # tool system
@@ -326,6 +337,39 @@ def shutup():
     state.deactivate()
 
 
+@tool("search")
+def search(query: str, engine: str = "google"):
+    url = build_search_url(query, engine)
+    open_or_focus_url(url, sleep_time=3)
+    return f"Searching for {query}"
+
+@tool("task")
+def task():
+    try:
+        with open(f"{BASE_DIR}\\memory\\TODO", "r") as file:
+            todo = file.read().strip()
+        if not todo:
+            return "You have no tasks"
+    except FileNotFoundError:
+        return "You have no tasks"
+
+    response = ollama.chat(
+        model="qwen3:0.6b",
+        messages=[
+            {
+                "role": "system",
+                "content": "You are a helpful assistant. The user will give you a TODO list. Read it and summarize the tasks in a short, natural, spoken sentence. No bullet points, no lists — just talk."
+            },
+            {
+                "role": "user",
+                "content": todo
+            }
+        ]
+    )
+
+    return response["message"]["content"]
+
+
 # AI prompt
 SYSTEM_PROMPT = """
 You are a system controller for a desktop AI assistant.
@@ -356,6 +400,11 @@ Available tools:
 - open_gaming_setup
 - open_coding_setup ("tool": "open_coding_setup")
 - open_unity_setup
+- search(query, engine) — search the web, engine can be "google", "youtube", "bing". Default is "google".
+    Examples:
+    "search cats" → {"tool": "search", "args": {"query": "cats"}}
+    "search cats on youtube" → {"tool": "search", "args": {"query": "cats", "engine": "youtube"}}
+- task (when user says "what shoud I do?" or "what I have to do?" or "show me my tasks"  ---> "tool": "task")
 
 If no tool matches, return:
 {
