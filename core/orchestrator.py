@@ -21,6 +21,7 @@ import ollama
 import json
 import requests
 import sys
+import os
 
 
 # config
@@ -36,6 +37,7 @@ client_secret=config["Spotify"]["client_secret"]
 redirect_uri=config["Spotify"]["redirect_uri"]
 weather_api_key = config["Weather"]["api_key"]
 
+sysUserName = os.getlogin()
 
 keyboard = KeyboardController()
 mouse = MouseController()

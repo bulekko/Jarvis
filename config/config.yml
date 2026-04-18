@@ -1,4 +1,4 @@
-ELEVEN_LABS_API_KEY: ""
+ELEVEN_LABS_API_KEY: "sk_4a80be3737b24ac687f8000f048b05ca1d1e75bf36e21cfd"
 
 Jarvis:
   prefix: "Jarvis"
@@ -8,12 +8,12 @@ Jarvis:
   model: "llama3.2:3b"
 
 Spotify:
-  client_id: ""
-  client_secret: ""
+  client_id: "1dedc35d4b044906b8070b025c766944"
+  client_secret: "5e6bd57cd3a04c9d9649589545255e15"
   redirect_uri: "http://127.0.0.1:8888/callback"
 
 Weather:
-  api_key: ""
+  api_key: "478e2d4e31c8a06c1bf1822f35ef5b4d"
   city: "London"
   units: "metric"
 
