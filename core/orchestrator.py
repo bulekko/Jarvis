@@ -15,6 +15,7 @@ import webbrowser
 import threading
 import cv2
 from PIL import ImageGrab
+from datetime import datetime
 import numpy as np
 import time
 import ollama
@@ -102,7 +103,7 @@ def open_opera():
         app = pywinauto.Application().connect(handle=opera_windows[0]._hWnd)
         app.window(handle=opera_windows[0]._hWnd).set_focus()
     else:
-        subprocess.Popen(r"C:\Users\raubo\AppData\Local\Programs\Opera GX\opera.exe" + " --remote-debugging-port=9222")
+        subprocess.Popen(r"C:\Users\sysUserName\AppData\Local\Programs\Opera GX\opera.exe" + " --remote-debugging-port=9222")
 
 
 def open_or_focus_url(url: str, sleep_time: int = 6):
@@ -202,7 +203,7 @@ def open_discord():
         app.window(handle=discord_windows[0]._hWnd).set_focus()
         return "Focusing discord"
     else:
-        subprocess.Popen(r"C:\Users\raubo\AppData\Local\Discord\Update.exe")
+        subprocess.Popen(rf"C:\Users\{sysUserName}\AppData\Local\Discord\Update.exe")
 
 
 @tool("open_medal")
@@ -214,7 +215,7 @@ def open_medal():
         app.window(handle=medal_windows[0]._hWnd).set_focus()
         return "Focusing Medal"
     else:
-        subprocess.Popen(r"C:\Users\raubo\AppData\Local\Medal\app-4.3255.0\Medal.exe")
+        subprocess.Popen(rf"C:\Users\{sysUserName}\AppData\Local\Medal\app-4.3255.0\Medal.exe")
     
 
 @tool("open_vscode")
@@ -226,7 +227,7 @@ def open_vscode():
         app.window(handle=vscode_windows[0]._hWnd).set_focus()
         return "Focusing Visual Studio Code"
     else:
-        subprocess.Popen(r"C:\Users\raubo\AppData\Local\Programs\Microsoft VS Code\Code.exe")
+        subprocess.Popen(rf"C:\Users\{sysUserName}\AppData\Local\Programs\Microsoft VS Code\Code.exe")
 
 
 @tool("open_github_desktop")
@@ -237,7 +238,7 @@ def open_github_desktop():
         app = pywinauto.Application().connect(handle=githubdesktop_windows[0]._hWnd)
         app.window(handle=githubdesktop_windows[0]._hWnd).set_focus()
     else:
-        subprocess.Popen(r"C:\Users\raubo\AppData\Local\GitHubDesktop\GitHubDesktop.exe")
+        subprocess.Popen(rf"C:\Users\{sysUserName}\AppData\Local\GitHubDesktop\GitHubDesktop.exe")
 
 
 @tool("open_gaming_setup")
@@ -249,13 +250,13 @@ def open_gaming_setup():
         app = pywinauto.Application().connect(handle=discord_windows[0]._hWnd)
         app.window(handle=discord_windows[0]._hWnd).set_focus()
     else:
-        subprocess.Popen(r"C:\Users\raubo\AppData\Local\Discord\Update.exe")
+        subprocess.Popen(rf"C:\Users\{sysUserName}\AppData\Local\Discord\Update.exe")
     
     if medal_windows:
         app = pywinauto.Application().connect(handle=medal_windows[0]._hWnd)
         app.window(handle=medal_windows[0]._hWnd).set_focus()
     else:
-        subprocess.Popen(r"C:\Users\raubo\AppData\Local\Medal\app-4.3255.0\Medal.exe")
+        subprocess.Popen(rf"C:\Users\{sysUserName}\AppData\Local\Medal\app-4.3255.0\Medal.exe")
 
 
 
@@ -271,13 +272,13 @@ def open_coding_setup():
         app = pywinauto.Application().connect(handle=githubdesktop_windows[0]._hWnd)
         app.window(handle=githubdesktop_windows[0]._hWnd).set_focus()
     else:
-        subprocess.Popen(r"C:\Users\raubo\AppData\Local\GitHubDesktop\GitHubDesktop.exe")
+        subprocess.Popen(rf"C:\Users\{sysUserName}\AppData\Local\GitHubDesktop\GitHubDesktop.exe")
     
     if vscode_windows:
         app = pywinauto.Application().connect(handle=vscode_windows[0]._hWnd)
         app.window(handle=vscode_windows[0]._hWnd).set_focus()
     else:
-        subprocess.Popen(r"C:\Users\raubo\AppData\Local\Programs\Microsoft VS Code\Code.exe")
+        subprocess.Popen(rf"C:\Users\{sysUserName}\AppData\Local\Programs\Microsoft VS Code\Code.exe")
     
 
 
@@ -294,7 +295,7 @@ def open_unity_setup():
         app.window(handle=githubdesktop_windows[0]._hWnd).set_focus()
         return "Focusing github desktop"
     else:
-        subprocess.Popen(r"C:\Users\raubo\AppData\Local\GitHubDesktop\GitHubDesktop.exe")
+        subprocess.Popen(rf"C:\Users\{sysUserName}\AppData\Local\GitHubDesktop\GitHubDesktop.exe")
 
     if unity_windows:
         app = pywinauto.Application().connect(handle=unity_windows[0]._hWnd)
@@ -467,6 +468,26 @@ def weather():
         return get_weather()
 
 
+@tool("screenshot")
+def screenshot():
+    from datetime import datetime
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    path = f"{BASE_DIR}\\screenshots\\{timestamp}.png"
+    
+    os.makedirs(f"{BASE_DIR}\\screenshots", exist_ok=True)
+    
+    screenshot = ImageGrab.grab()
+    screenshot.save(path)
+    
+    return "Screenshot taken"
+
+
+@tool("time")
+def current_time():
+    now = datetime.now()
+    return f"It's {now.strftime('%H:%M')}, {now.strftime('%A, %B %d %Y')}"
+
+
 # AI prompt
 SYSTEM_PROMPT = """
 You are a system controller for a desktop AI assistant.
@@ -514,6 +535,8 @@ Available tools:
     "close discord" → {"tool": "close_app", "args": {"name": "Discord"}}
     "close spotify" → {"tool": "close_app", "args": {"name": "Spotify"}}
 - weather (aka. "what's the weather", "how's the weather today")
+- screenshot (aka. "take a screenshot", "screenshot")
+- time (aka. "what time is it", "what's the date", "what day is it")
 
 
 If no tool matches, return:
