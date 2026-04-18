@@ -9,6 +9,7 @@ from pathlib import Path
 from core.state import state
 import pygetwindow as gw
 from urllib.parse import quote
+from ui.overlay import Overlay
 import pywinauto
 import subprocess
 import webbrowser
@@ -39,10 +40,16 @@ client_secret=config["Spotify"]["client_secret"]
 redirect_uri=config["Spotify"]["redirect_uri"]
 weather_api_key = config["Weather"]["api_key"]
 
-sysUserName = os.getlogin()
+github_desktop_path = config["Apps"]["Github_desktop"]
+unityhub_path = config["Apps"]["unity_hub"]
+discord_path = config["Apps"]["discord"]
+medal_path = config["Apps"]["medal"]
+vscode_path = config["Apps"]["vscode"]
 
+sysUserName = os.getlogin()
 keyboard = KeyboardController()
 mouse = MouseController()
+overlay = Overlay()
 conversation_history = []
 
 SPOTIFY_ENABLED = client_id != "" and client_secret != ""
@@ -192,7 +199,7 @@ def open_unityhub():
         app.window(handle=unity_windows[0]._hWnd).set_focus()
         return "Focusing Unity Hub"
     else:
-        subprocess.Popen(r"C:\Program Files\Unity Hub\Unity Hub.exe")
+        subprocess.Popen(unityhub_path)
 
 
 @tool("open_discord")
@@ -216,7 +223,7 @@ def open_medal():
         app.window(handle=medal_windows[0]._hWnd).set_focus()
         return "Focusing Medal"
     else:
-        subprocess.Popen(rf"C:\Users\{sysUserName}\AppData\Local\Medal\app-4.3255.0\Medal.exe")
+        subprocess.Popen(medal_path)
     
 
 @tool("open_vscode")
@@ -228,8 +235,7 @@ def open_vscode():
         app.window(handle=vscode_windows[0]._hWnd).set_focus()
         return "Focusing Visual Studio Code"
     else:
-        subprocess.Popen(rf"C:\Users\{sysUserName}\AppData\Local\Programs\Microsoft VS Code\Code.exe")
-
+        subprocess.Popen(vscode_path)
 
 @tool("open_github_desktop")
 def open_github_desktop():
@@ -239,7 +245,7 @@ def open_github_desktop():
         app = pywinauto.Application().connect(handle=githubdesktop_windows[0]._hWnd)
         app.window(handle=githubdesktop_windows[0]._hWnd).set_focus()
     else:
-        subprocess.Popen(rf"C:\Users\{sysUserName}\AppData\Local\GitHubDesktop\GitHubDesktop.exe")
+        subprocess.Popen(github_desktop_path)
 
 
 @tool("open_gaming_setup")
@@ -251,14 +257,13 @@ def open_gaming_setup():
         app = pywinauto.Application().connect(handle=discord_windows[0]._hWnd)
         app.window(handle=discord_windows[0]._hWnd).set_focus()
     else:
-        subprocess.Popen(rf"C:\Users\{sysUserName}\AppData\Local\Discord\Update.exe")
+        subprocess.Popen(discord_path)
     
     if medal_windows:
         app = pywinauto.Application().connect(handle=medal_windows[0]._hWnd)
         app.window(handle=medal_windows[0]._hWnd).set_focus()
     else:
-        subprocess.Popen(rf"C:\Users\{sysUserName}\AppData\Local\Medal\app-4.3255.0\Medal.exe")
-
+        subprocess.Popen(medal_path)
 
 
 @tool("open_coding_setup")
@@ -273,15 +278,14 @@ def open_coding_setup():
         app = pywinauto.Application().connect(handle=githubdesktop_windows[0]._hWnd)
         app.window(handle=githubdesktop_windows[0]._hWnd).set_focus()
     else:
-        subprocess.Popen(rf"C:\Users\{sysUserName}\AppData\Local\GitHubDesktop\GitHubDesktop.exe")
+        subprocess.Popen(github_desktop_path)
     
     if vscode_windows:
         app = pywinauto.Application().connect(handle=vscode_windows[0]._hWnd)
         app.window(handle=vscode_windows[0]._hWnd).set_focus()
     else:
-        subprocess.Popen(rf"C:\Users\{sysUserName}\AppData\Local\Programs\Microsoft VS Code\Code.exe")
+        subprocess.Popen(vscode_path)
     
-
 
 @tool("open_unity_setup")
 def open_unity_setup():
@@ -296,15 +300,14 @@ def open_unity_setup():
         app.window(handle=githubdesktop_windows[0]._hWnd).set_focus()
         return "Focusing github desktop"
     else:
-        subprocess.Popen(rf"C:\Users\{sysUserName}\AppData\Local\GitHubDesktop\GitHubDesktop.exe")
+        subprocess.Popen(github_desktop_path)
 
     if unity_windows:
         app = pywinauto.Application().connect(handle=unity_windows[0]._hWnd)
         app.window(handle=unity_windows[0]._hWnd).set_focus()
     else:
-        subprocess.Popen(r"C:\Program Files\Unity Hub\Unity Hub.exe")
+        subprocess.Popen(unityhub_path)
     
-
 
 @tool("open_spotify")
 def open_spotify():
@@ -372,9 +375,9 @@ def clip():
     keyboard.tap(Key.f8)
 
 
-@tool("shutdown")
-def shutdown():
-    sys.exit()
+@tool("exit_jarvis")
+def exit_jarvis():
+    os._exit(0)
 
 
 @tool("shutup")
@@ -382,6 +385,7 @@ def shutup():
     global conversation_history
     conversation_history = []
     state.deactivate()
+    overlay.set_idle()
 
 
 @tool("search")
@@ -507,7 +511,11 @@ Available tools:
 - open_spotify
 - pause_music
 - play_music
-- shutdown
+- exit_jarvis — closes Jarvis app.
+    Examples:
+    "goodbye jarvis" → [{"tool": "exit_jarvis", "args": {}}]
+    "turn yourself off" → [{"tool": "exit_jarvis", "args": {}}]
+    "bye" → [{"tool": "exit_jarvis", "args": {}}]
 - shutup ("tool": "shutup")
 - open_youtube
 - clip (aka. "Javis, clip that shit")
@@ -630,7 +638,7 @@ def execute(action_json: str):
 
     except Exception as e:
         if debug:
-            logging.debug("Execution error:", e)
+            logging.debug(f"Execution error: {e}")
         return "Invalid AI response"
 
 
@@ -639,10 +647,10 @@ def handle_command(text: str):
     if state.is_active():
         text = text.lower()
         if debug:
-            logging.debug("User:", text)
+            logging.debug(f"User: {text}")
         ai_response = ask_model(text)
         if debug:
-            logging.debug("AI:", ai_response)
+            logging.debug(f"AI: {ai_response}")
         return execute(ai_response)
     else:
         if debug:
