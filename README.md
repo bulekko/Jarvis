@@ -87,7 +87,7 @@ for i, mic in enumerate(sr.Microphone.list_microphone_names()):
 
 ---
 
-## ▶️ Running Jarvis
+## Running Jarvis
 
 ```bash
 python main.py
