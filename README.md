@@ -8,7 +8,7 @@ Jarvis is a voice-controlled personal assistant for automating daily tasks on Wi
 
 - Windows 10/11
 - Python 3.11
-- [Ollama](https://ollama.com) with `qwen3:0.6b` model
+- [Ollama](https://ollama.com) with `llama3.2:3b` model
 - Opera GX browser
 - ElevenLabs API key
 - ffmpeg
@@ -85,10 +85,10 @@ import speech_recognition as sr
 for i, mic in enumerate(sr.Microphone.list_microphone_names()):
     print(i, mic)
 ```
-> You can also run `utils\mic_debug.py`
+
 ---
 
-## Running Jarvis
+## ▶️ Running Jarvis
 
 ```bash
 python main.py

@@ -4,9 +4,21 @@ Jarvis:
   prefix: "Jarvis"
   wake_word: "wake up Jarvis"
   no_speech_timeout: 15
+  energy_threshold: 4000 # more = less ambient noise
+  model: "llama3.2:3b"
+
+Spotify:
+  client_id: ""
+  client_secret: ""
+  redirect_uri: "http://127.0.0.1:8888/callback"
+
+Weather:
+  api_key: ""
+  city: "London"
+  units: "metric"
 
 Setup:
   microphone_id: 1
 
 utils:
-  debug: true
+  debug: false

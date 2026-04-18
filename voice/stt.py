@@ -11,35 +11,21 @@ with open(BASE_DIR / "config" / "config.yml", "r") as file:
 
 mic = config["Setup"]["microphone_id"]
 debug = config["utils"]["debug"]
+energy_threshold = config["Jarvis"]["energy_threshold"]
 
 
 # variables
 recognizer = sr.Recognizer()
-
+recognizer.pause_threshold = 0.5
+recognizer.energy_threshold = energy_threshold
 
 # logic
-#def listen():
-#    mic_index = mic
-#    
-#    with sr.Microphone(device_index=mic_index) as source:
-#        #recognizer.adjust_for_ambient_noise(source, duration=0.5)
-#        audio = recognizer.listen(source)
-#    try:
-#        text = recognizer.recognize_google(audio, language="en-US")
-#        return text
-#    except sr.UnknownValueError:
-#        return None
-#    except sr.RequestError as e:
-#        print(f"STT error: {e}")
-#        #return None
-
 def listen():
-    recognizer = sr.Recognizer()
-
     if debug:
         print("LISTEN START")
 
-    with sr.Microphone() as source:
+    with sr.Microphone(device_index=mic) as source:
+        recognizer.adjust_for_ambient_noise(source, duration=0.3)
         if debug:
             print("MIC OPEN")
         audio = recognizer.listen(source, timeout=None, phrase_time_limit=5)
@@ -55,7 +41,3 @@ def listen():
         if debug:
             print("ERROR:", e)
         return None
-
-if __name__ == "__main__":
-    while debug:
-        print(listen())

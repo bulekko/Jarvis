@@ -1,3 +1,9 @@
+import ctypes
+ctypes.windll.ole32.CoInitializeEx(None, 0x0)
+
+import pygame
+pygame.mixer.init()
+
 import speech_recognition as sr
 from voice.stt import listen
 from voice.tts import speak
@@ -6,6 +12,7 @@ from core.orchestrator import handle_command
 from core.state import state
 from yaml import safe_load
 from pathlib import Path
+import threading
 import time
 import sys
 import os
@@ -25,15 +32,20 @@ mic = config["Setup"]["microphone_id"]
 
 
 # logic
+def speak_async(text: str):
+    thread = threading.Thread(target=speak, args=(text,))
+    thread.start()
+
 while True:
     if state.speaking():
+        time.sleep(0.1)
         continue
 
     text = listen()
 
     if not text:
         continue
-
+    
     if wake_word in text:
         state.activate()
         speak("What can I do for you?")
@@ -41,4 +53,4 @@ while True:
 
     response = handle_command(text)
     if response:
-        speak(response)
+        speak_async(response)
