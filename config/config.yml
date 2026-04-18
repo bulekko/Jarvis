@@ -4,6 +4,7 @@ Jarvis:
   no_speech_timeout: 15
   energy_threshold: 4000 # more = less ambient noise
   model: "llama3.2:3b"
+  whisper_model: "small"
 
 Spotify:
   client_id: ""
