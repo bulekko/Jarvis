@@ -1,8 +1,6 @@
-ELEVEN_LABS_API_KEY: ""
-
 Jarvis:
   prefix: "Jarvis"
-  wake_word: "wake up Jarvis"
+  wake_word: "Hello, Jarvis"
   no_speech_timeout: 15
   energy_threshold: 4000 # more = less ambient noise
   model: "llama3.2:3b"
@@ -20,5 +18,12 @@ Weather:
 Setup:
   microphone_id: 1
 
+Apps:
+  discord: 'C:\Users\YOUR_USERNAME\AppData\Local\Discord\Update.exe'
+  medal: 'C:\Users\YOUR_USERNAME\AppData\Local\Medal\Medal.exe'
+  vscode: 'C:\Users\YOUR_USERNAME\AppData\Local\Programs\Microsoft VS Code\Code.exe'
+  unity_hub: 'C:\Program Files\Unity Hub\Unity Hub.exe'
+  Github_desktop: 'C:\Users\YOUR_USERNAME\AppData\Local\GitHubDesktop\GitHubDesktop.exe'
+
 utils:
-  debug: true
+  debug: false
