@@ -16,6 +16,7 @@ import threading
 import cv2
 from PIL import ImageGrab
 from datetime import datetime
+import logging
 import numpy as np
 import time
 import ollama
@@ -54,7 +55,7 @@ def find_image_on_screen(template_path, threshold=0.8):
     template = cv2.imread(template_path)
     if template is None:
         if debug:
-            print(f"Can't load image: {template_path}")
+            logging.debug(f"Can't load image: {template_path}")
         return None
 
     template_gray = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
@@ -69,7 +70,7 @@ def find_image_on_screen(template_path, threshold=0.8):
     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
 
     if debug:
-        print(f"Matching: {max_val:.3f} (required: {threshold})")
+        logging.debug(f"Matching: {max_val:.3f} (required: {threshold})")
 
     if max_val >= threshold:
         x, y = max_loc
@@ -331,7 +332,7 @@ def play_music():
         if pos:
             x, y = pos["center"]
             if debug:
-                print(x, y)
+                logging.debug(x, y)
             mouse.position = (x, y)
             mouse.click(Button.left)
     else:
@@ -464,7 +465,7 @@ def close_app(name: str):
 @tool("weather")
 def weather():
     if is_weather_reachable:
-        print(get_weather())
+        logging.debug(get_weather())
         return get_weather()
 
 
@@ -629,7 +630,7 @@ def execute(action_json: str):
 
     except Exception as e:
         if debug:
-            print("Execution error:", e)
+            logging.debug("Execution error:", e)
         return "Invalid AI response"
 
 
@@ -638,12 +639,12 @@ def handle_command(text: str):
     if state.is_active():
         text = text.lower()
         if debug:
-            print("User:", text)
+            logging.debug("User:", text)
         ai_response = ask_model(text)
         if debug:
-            print("AI:", ai_response)
+            logging.debug("AI:", ai_response)
         return execute(ai_response)
     else:
         if debug:
-            print("Jarvis is chilling")
+            logging.debug("Jarvis is chilling")
         return None

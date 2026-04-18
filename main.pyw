@@ -7,12 +7,12 @@ pygame.mixer.init()
 import speech_recognition as sr
 from voice.stt import listen
 from voice.tts import speak
-from utils.speaker import safe_speak
 from core.orchestrator import handle_command
 from core.state import state
 from yaml import safe_load
 from pathlib import Path
 import threading
+import logging
 import time
 import sys
 import os
@@ -20,6 +20,14 @@ import os
 BASE_DIR = Path(__file__).parent
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+sys.stdout = open("debug.log", "a", encoding="utf-8")
+sys.stderr = open("debug.log", "a", encoding="utf-8")
+
+logging.basicConfig(
+    filename="debug.log",
+    level=logging.DEBUG,
+    format="%(asctime)s - %(message)s"
+)
 
 
 # config

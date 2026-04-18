@@ -1,6 +1,7 @@
 import speech_recognition as sr
 from yaml import safe_load
 from pathlib import Path
+import logging
 
 BASE_DIR = Path(__file__).parent.parent
 
@@ -22,22 +23,22 @@ recognizer.energy_threshold = energy_threshold
 # logic
 def listen():
     if debug:
-        print("LISTEN START")
+        logging.debug("LISTEN START")
 
     with sr.Microphone(device_index=mic) as source:
         recognizer.adjust_for_ambient_noise(source, duration=0.3)
         if debug:
-            print("MIC OPEN")
+            logging.debug("MIC OPEN")
         audio = recognizer.listen(source, timeout=None, phrase_time_limit=5)
         if debug:
-            print("AUDIO RECORDED")
+            logging.debug("AUDIO RECORDED")
 
     try:
         text = recognizer.recognize_google(audio, language="en-US")
         if debug:
-            print(f"Text: {text}")
+            logging.debug(f"Text: {text}")
         return text
     except Exception as e:
         if debug:
-            print("ERROR:", e)
+            logging.debug("ERROR:", e)
         return None

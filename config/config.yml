@@ -21,4 +21,4 @@ Setup:
   microphone_id: 1
 
 utils:
-  debug: false
+  debug: true
