@@ -54,7 +54,7 @@ conversation_history = []
 
 SPOTIFY_ENABLED = client_id != "" and client_secret != ""
 SPOTIFY_DISABLED = client_id == "" and client_secret == ""
-is_weather_reachable = weather_api_key == ""
+is_weather_reachable = weather_api_key != ""
 
 
 # functions
@@ -111,7 +111,7 @@ def open_opera():
         app = pywinauto.Application().connect(handle=opera_windows[0]._hWnd)
         app.window(handle=opera_windows[0]._hWnd).set_focus()
     else:
-        subprocess.Popen(r"C:\Users\sysUserName\AppData\Local\Programs\Opera GX\opera.exe" + " --remote-debugging-port=9222")
+        subprocess.Popen(rf"C:\Users\{sysUserName}\AppData\Local\Programs\Opera GX\opera.exe --remote-debugging-port=9222")
 
 
 def open_or_focus_url(url: str, sleep_time: int = 6):
@@ -271,7 +271,7 @@ def open_coding_setup():
     open_or_focus_url("https://github.com")
     open_or_focus_url("https://open.spotify.com")
 
-    githubdesktop_windows = [w for w in gw.getAllWindows() if "github desktop" in w.title]
+    githubdesktop_windows = [w for w in gw.getAllWindows() if "GitHub Desktop" in w.title]
     vscode_windows = [w for w in gw.getAllWindows() if "Visual Studio Code" in w.title]
     
     if githubdesktop_windows:
@@ -298,7 +298,6 @@ def open_unity_setup():
     if githubdesktop_windows:
         app = pywinauto.Application().connect(handle=githubdesktop_windows[0]._hWnd)
         app.window(handle=githubdesktop_windows[0]._hWnd).set_focus()
-        return "Focusing github desktop"
     else:
         subprocess.Popen(github_desktop_path)
 
@@ -335,7 +334,7 @@ def play_music():
         if pos:
             x, y = pos["center"]
             if debug:
-                logging.debug(x, y)
+                logging.debug(f"{x}, {y}")
             mouse.position = (x, y)
             mouse.click(Button.left)
     else:
