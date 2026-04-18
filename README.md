@@ -47,7 +47,7 @@ pip install speechrecognition elevenlabs pynput pygetwindow pywinauto opencv-pyt
 Download Ollama from [ollama.com](https://ollama.com), then run:
 
 ```bash
-ollama pull qwen3:0.6b
+ollama pull llama3.2:3b
 ```
 
 ### 5. Configure Opera GX for DevTools
@@ -67,7 +67,6 @@ ELEVEN_LABS_API_KEY: "your_api_key_here"
 
 Jarvis:
   wake_word: "jarvis"
-  sleep_word: "goodbye"
   prefix: "hey"
   no_speech_timeout: 30
 
@@ -88,7 +87,7 @@ for i, mic in enumerate(sr.Microphone.list_microphone_names()):
 
 ---
 
-## ▶️ Running Jarvis
+## Running Jarvis
 
 ```bash
 python main.py
