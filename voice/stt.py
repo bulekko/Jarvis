@@ -35,10 +35,7 @@ def listen():
             logging.debug("AUDIO RECORDED")
 
     try:
-        raw = np.frombuffer(
-            audio.get_raw_data(convert_rate=16000, convert_width=2),
-            np.int16
-        ).astype(np.float32) / 32768.0
+        raw = np.frombuffer(audio.get_raw_data(convert_rate=16000, convert_width=2),np.int16).astype(np.float32) / 32768.0
 
         result = model.transcribe(raw, language="en", fp16=False)
 

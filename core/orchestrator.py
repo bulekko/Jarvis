@@ -9,6 +9,7 @@ from pathlib import Path
 from core.state import state
 import pygetwindow as gw
 from urllib.parse import quote
+from utils.gesture import start_gesture_control, stop_gesture_control
 import pywinauto
 import subprocess
 import webbrowser
@@ -183,16 +184,13 @@ def tool(name):
 def open_browser():
     open_opera()
 
-
 @tool("open_youtube")
 def open_youtube():
     open_or_focus_url("https://youtube.com")
 
-
 @tool("open_github")
 def open_github():
     open_or_focus_url("https://github.com")
-
 
 @tool("open_unityhub")
 def open_unityhub():
@@ -205,7 +203,6 @@ def open_unityhub():
     else:
         subprocess.Popen(unityhub_path)
 
-
 @tool("open_discord")
 def open_discord():
     discord_windows = [w for w in gw.getAllWindows() if "Discord" in w.title]
@@ -217,7 +214,6 @@ def open_discord():
     else:
         subprocess.Popen(rf"C:\Users\{sysUserName}\AppData\Local\Discord\Update.exe")
 
-
 @tool("open_medal")
 def open_medal():
     medal_windows = [w for w in gw.getAllWindows() if "Medal" in w.title]
@@ -227,8 +223,7 @@ def open_medal():
         app.window(handle=medal_windows[0]._hWnd).set_focus()
         return "Focusing Medal"
     else:
-        subprocess.Popen(medal_path)
-    
+        subprocess.Popen(medal_path) 
 
 @tool("open_vscode")
 def open_vscode():
@@ -251,7 +246,6 @@ def open_github_desktop():
     else:
         subprocess.Popen(github_desktop_path)
 
-
 @tool("open_gaming_setup")
 def open_gaming_setup():
     discord_windows = [w for w in gw.getAllWindows() if "Discord" in w.title]
@@ -268,7 +262,6 @@ def open_gaming_setup():
         app.window(handle=medal_windows[0]._hWnd).set_focus()
     else:
         subprocess.Popen(medal_path)
-
 
 @tool("open_coding_setup")
 def open_coding_setup():
@@ -289,7 +282,6 @@ def open_coding_setup():
         app.window(handle=vscode_windows[0]._hWnd).set_focus()
     else:
         subprocess.Popen(vscode_path)
-    
 
 @tool("open_unity_setup")
 def open_unity_setup():
@@ -310,12 +302,10 @@ def open_unity_setup():
         app.window(handle=unity_windows[0]._hWnd).set_focus()
     else:
         subprocess.Popen(unityhub_path)
-    
 
 @tool("open_spotify")
 def open_spotify():
     open_or_focus_url("https://open.spotify.com")
-
 
 @tool("pause_music")
 def pause_music():
@@ -328,7 +318,6 @@ def pause_music():
             mouse.click(Button.left)
     else:
         spotify_pause()
-
 
 @tool("play_music")
 def play_music():
@@ -343,7 +332,6 @@ def play_music():
             mouse.click(Button.left)
     else:
         spotify_play()
-
 
 @tool("next_track")
 def next_track():
@@ -366,22 +354,18 @@ def current_track():
     else:
         return "Connect spotify developer app"
 
-
 @tool("clear")
 def clear():
     with keyboard.pressed(Key.cmd):
         keyboard.tap('d')
 
-
 @tool("clip")
 def clip():
     keyboard.tap(Key.f8)
 
-
 @tool("exit_jarvis")
 def exit_jarvis():
     os._exit(0)
-
 
 @tool("shutup")
 def shutup():
@@ -389,7 +373,6 @@ def shutup():
     conversation_history = []
     state.deactivate()
     overlay.set_idle()
-
 
 @tool("search")
 def search(query: str, engine: str = "google"):
@@ -417,7 +400,6 @@ def task():
     )
 
     return response["message"]["content"]
-
 
 @tool("complete_task")
 def complete_task(task: str):
@@ -451,7 +433,6 @@ def complete_task(task: str):
             return "Task already completed"
     except:
         return f"Task not found: {task}"
-    
 
 @tool("close_window")
 def close_window():
@@ -460,7 +441,6 @@ def close_window():
         app = pywinauto.Application().connect(handle=window._hWnd)
         app.window(handle=window._hWnd).close()
 
-
 @tool("close_app")
 def close_app(name: str):
     windows = [w for w in gw.getAllWindows() if name.lower() in w.title.lower()]
@@ -468,13 +448,11 @@ def close_app(name: str):
         app = pywinauto.Application().connect(handle=windows[0]._hWnd)
         app.window(handle=windows[0]._hWnd).close()
 
-
 @tool("weather")
 def weather():
     if is_weather_reachable:
         logging.debug(get_weather())
         return get_weather()
-
 
 @tool("screenshot")
 def screenshot():
@@ -489,11 +467,18 @@ def screenshot():
     
     return "Screenshot taken"
 
-
 @tool("time")
 def current_time():
     now = datetime.now()
     return f"It's {now.strftime('%H:%M')}, {now.strftime('%A, %B %d %Y')}"
+
+@tool("gesture_on")
+def gesture_on():
+    start_gesture_control()
+
+@tool("gesture_off")
+def gesture_off():
+    stop_gesture_control()
 
 
 # AI prompt
@@ -549,6 +534,8 @@ Available tools:
 - weather (aka. "what's the weather", "how's the weather today")
 - screenshot (aka. "take a screenshot", "screenshot")
 - time (aka. "what time is it", "what's the date", "what day is it")
+- gesture_on (aka. "enable gesture control", "hand control on")
+- gesture_off (aka. "disable gesture control", "hand control off")
 
 
 If no tool matches, return:

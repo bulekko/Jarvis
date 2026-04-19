@@ -67,7 +67,7 @@ Find your Opera GX shortcut, right-click -> Properties, and add this flag to the
 ```yaml
 Jarvis:
   prefix: "Jarvis"
-  wake_word: "Hello, Jarvis"
+  wake_word: "Hello Jarvis"
   no_speech_timeout: 15
   energy_threshold: 4000 # more = less ambient noise
   model: "llama3.2:3b"
