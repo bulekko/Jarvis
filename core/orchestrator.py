@@ -475,6 +475,7 @@ def current_time():
 @tool("your_location")
 def your_location():
     open_or_focus_url("https://github.com/bulekko/Jarvis", 0)
+    return "Here."
 
 @tool("gesture_on")
 def gesture_on():
@@ -542,7 +543,7 @@ Available tools:
 - gesture_off (aka. "disable gesture control", "hand control off")
 - your_location
     Examples:
-    "Where are you" → {"tool": "your_location"} and
+    "Where are you?" → {"tool": "your_location"}
 
 
 If no tool matches, return:
@@ -594,28 +595,33 @@ def execute(action_json: str):
         executed_tools = []
         tool_response = None
         threads = []
+        results = {}
 
+        def run_tool(name, func, kwargs):
+            result = func(**kwargs)
+            if result:
+                results[name] = result
+
+        threads = []
         for action in actions:
             tool_name = action.get("tool")
             args = action.get("args", {})
-
             if tool_name in TOOLS:
                 executed_tools.append(tool_name)
-                t = threading.Thread(target=TOOLS[tool_name], kwargs=args)
+                t = threading.Thread(target=run_tool, args=(tool_name, TOOLS[tool_name], args))
                 threads.append(t)
                 t.start()
 
         for t in threads:
             t.join()
 
+        tool_response = next(iter(results.values()), None)
+
         if not executed_tools:
             return "Tool not found"
 
         if "task" in executed_tools:
             tool_response = TOOLS["task"]()
-
-        if "your_location" in executed_tools:
-            tool_response = "Here"
 
         if tool_response:
             return tool_response
