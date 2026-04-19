@@ -41,7 +41,7 @@ cd Jarvis
 ### 3. Install Python dependencies
 
 ```bash
-pip install speechrecognition openai-whisper pynput pygetwindow pywinauto opencv-python pillow numpy pyyaml ollama requests spotipy pygame customtkinter pystray TTS python-dotenv
+pip install speechrecognition openai-whisper pynput pygetwindow pywinauto opencv-python pillow numpy pyyaml ollama requests spotipy pygame customtkinter pystray TTS
 ```
 
 ### 4. Install Ollama and pull the model
@@ -202,8 +202,6 @@ The overlay can be dragged anywhere on the screen. It can be minimized to the sy
 ## TTS Options
 
 By default Jarvis uses Coqui TTS which works fully offline. On first run it will download the model (~200MB automatically).
-
-If you have an ElevenLabs API key, add it to `config.yml` and Jarvis will use ElevenLabs instead for higher quality voice.
 
 ---
 
