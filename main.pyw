@@ -7,7 +7,7 @@ pygame.mixer.init()
 import speech_recognition as sr
 from voice.stt import listen
 from voice.tts import speak
-from core.orchestrator import handle_command
+from core.orchestrator import handle_command, set_overlay
 from core.state import state
 from ui.overlay import Overlay
 from yaml import safe_load
@@ -40,16 +40,18 @@ wake_word = config["Jarvis"]["wake_word"]
 mic = config["Setup"]["microphone_id"]
 
 overlay = Overlay()
+set_overlay(overlay)
 
 
 # logic
 def speak_async(text: str):
-    thread = threading.Thread(target=speak, args=(text,))
+    thread = threading.Thread(target=speak, args=(text))
     thread.start()
 
 def main_loop():
     while True:
         if state.speaking():
+            overlay.set_speaking()
             time.sleep(0.1)
             continue
 
@@ -65,7 +67,7 @@ def main_loop():
 
         if wake_word in text:
             state.activate()
-            overlay.set_speaking("What can I do for you?")
+            overlay.set_speaking()
             speak_async("What can I do for you?")
             continue
 
@@ -73,7 +75,7 @@ def main_loop():
         response = handle_command(text)
 
         if response:
-            overlay.set_speaking(response)
+            overlay.set_speaking()
             speak_async(response)
         else:
             overlay.set_idle()

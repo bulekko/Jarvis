@@ -9,7 +9,6 @@ from pathlib import Path
 from core.state import state
 import pygetwindow as gw
 from urllib.parse import quote
-from ui.overlay import Overlay
 import pywinauto
 import subprocess
 import webbrowser
@@ -49,8 +48,13 @@ vscode_path = config["Apps"]["vscode"]
 sysUserName = os.getlogin()
 keyboard = KeyboardController()
 mouse = MouseController()
-overlay = Overlay()
 conversation_history = []
+
+overlay = None
+
+def set_overlay(o):
+    global overlay
+    overlay = o
 
 SPOTIFY_ENABLED = client_id != "" and client_secret != ""
 SPOTIFY_DISABLED = client_id == "" and client_secret == ""
