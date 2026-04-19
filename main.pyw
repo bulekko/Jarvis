@@ -45,7 +45,7 @@ set_overlay(overlay)
 
 # logic
 def speak_async(text: str):
-    thread = threading.Thread(target=speak, args=(text))
+    thread = threading.Thread(target=speak, args=(text,))
     thread.start()
 
 def main_loop():
