@@ -472,6 +472,10 @@ def current_time():
     now = datetime.now()
     return f"It's {now.strftime('%H:%M')}, {now.strftime('%A, %B %d %Y')}"
 
+@tool("your_location")
+def your_location():
+    open_or_focus_url("https://github.com/bulekko/Jarvis", 0)
+
 @tool("gesture_on")
 def gesture_on():
     start_gesture_control()
@@ -536,6 +540,9 @@ Available tools:
 - time (aka. "what time is it", "what's the date", "what day is it")
 - gesture_on (aka. "enable gesture control", "hand control on")
 - gesture_off (aka. "disable gesture control", "hand control off")
+- your_location
+    Examples:
+    "Where are you" → {"tool": "your_location"} and
 
 
 If no tool matches, return:
@@ -606,6 +613,9 @@ def execute(action_json: str):
 
         if "task" in executed_tools:
             tool_response = TOOLS["task"]()
+
+        if "your_location" in executed_tools:
+            tool_response = "Here"
 
         if tool_response:
             return tool_response

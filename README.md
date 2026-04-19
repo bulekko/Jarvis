@@ -12,7 +12,6 @@ Jarvis is a voice-controlled personal assistant for automating daily tasks on Wi
 - Opera GX browser
 - Spotify Premium + Developer account (optional)
 - OpenWeatherMap API key (optional)
-- ElevenLabs API key (optional, Coqui TTS works offline)
 - ffmpeg
 
 ---
@@ -41,7 +40,7 @@ cd Jarvis
 ### 3. Install Python dependencies
 
 ```bash
-pip install speechrecognition openai-whisper pynput pygetwindow pywinauto opencv-python pillow numpy pyyaml ollama requests spotipy pygame customtkinter pystray TTS python-dotenv
+pip install speechrecognition openai-whisper pynput pygetwindow pywinauto opencv-python pillow numpy pyyaml ollama requests spotipy pygame customtkinter pystray TTS
 ```
 
 ### 4. Install Ollama and pull the model
@@ -153,6 +152,7 @@ Or double-click `main.pyw` — no console window will appear.
 | `"clip that"` | Presses F8 (e.g. for game clip) |
 | `"shut up"` | Mutes Jarvis until next wake word |
 | `"goodbye"` / `"bye"` | Closes Jarvis |
+| `"Where are you?"` | Opens github page |
 
 ---
 
@@ -202,8 +202,6 @@ The overlay can be dragged anywhere on the screen. It can be minimized to the sy
 ## TTS Options
 
 By default Jarvis uses Coqui TTS which works fully offline. On first run it will download the model (~200MB automatically).
-
-If you have an ElevenLabs API key, add it to `config.yml` and Jarvis will use ElevenLabs instead for higher quality voice.
 
 ---
 
