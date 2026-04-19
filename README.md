@@ -12,7 +12,6 @@ Jarvis is a voice-controlled personal assistant for automating daily tasks on Wi
 - Opera GX browser
 - Spotify Premium + Developer account (optional)
 - OpenWeatherMap API key (optional)
-- ElevenLabs API key (optional, Coqui TTS works offline)
 - ffmpeg
 
 ---
