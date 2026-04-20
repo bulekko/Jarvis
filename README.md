@@ -9,7 +9,7 @@ Jarvis is a voice-controlled personal assistant for automating daily tasks on Wi
 - Windows 10/11
 - Python 3.11
 - [Ollama](https://ollama.com) with `llama3.2:3b` model
-- Opera GX browser
+- opera_gx, chrome, firefox or edge browser
 - Spotify Premium + Developer account (optional)
 - OpenWeatherMap API key (optional)
 - ffmpeg
@@ -121,7 +121,6 @@ Or double-click `main.pyw` — no console window will appear.
 
 | What you say | What happens |
 |---|---|
-| `"Jarvis"` | Wakes up Jarvis |
 | `"open browser"` | Opens or focuses Opera GX |
 | `"open Spotify"` | Opens or focuses Spotify tab |
 | `"open YouTube"` | Opens or focuses YouTube tab |
@@ -129,8 +128,8 @@ Or double-click `main.pyw` — no console window will appear.
 | `"open Unity Hub"` | Opens or focuses Unity Hub |
 | `"open VS Code"` | Opens or focuses Visual Studio Code |
 | `"open GitHub Desktop"` | Opens or focuses GitHub Desktop |
-| `"open Medal"` | Opens or focuses Medal |
-| `"gaming setup"` | Opens Discord and Medal |
+| `"open Medal"` | Opens or focuses Medal | #
+| `"gaming setup"` | Opens Discord and Medal | #
 | `"coding setup"` | Opens VS Code, GitHub Desktop, GitHub and Spotify |
 | `"unity setup"` | Opens Unity Hub, GitHub Desktop, GitHub and Spotify |
 | `"play music"` | Plays music on Spotify |

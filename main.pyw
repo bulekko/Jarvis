@@ -1,12 +1,14 @@
+from config.config_debug import rewrite_config
+rewrite_config()
+
 import ctypes
 ctypes.windll.ole32.CoInitializeEx(None, 0x0)
 
 import pygame
 pygame.mixer.init()
 
-import speech_recognition as sr
 from voice.stt import listen
-from voice.tts import speak
+from voice.tts import speak_async
 from core.orchestrator import handle_command, set_overlay
 from core.state import state
 from ui.overlay import Overlay
@@ -44,10 +46,6 @@ set_overlay(overlay)
 
 
 # logic
-def speak_async(text: str):
-    thread = threading.Thread(target=speak, args=(text,))
-    thread.start()
-
 def main_loop():
     while True:
         if state.speaking():

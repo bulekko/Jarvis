@@ -35,16 +35,34 @@ with open(BASE_DIR / "config" / "config.yml", "r") as file:
 
 debug = config["utils"]["debug"]
 model = config["Jarvis"]["model"]
+language = config["Jarvis"]["language"]
+personality = config["Jarvis"]["personality"]
 client_id = config["Spotify"]["client_id"]
 client_secret=config["Spotify"]["client_secret"]
 redirect_uri=config["Spotify"]["redirect_uri"]
 weather_api_key = config["Weather"]["api_key"]
+javris_location = config["utils"]["javris_location"]
 
 github_desktop_path = config["Apps"]["Github_desktop"]
 unityhub_path = config["Apps"]["unity_hub"]
 discord_path = config["Apps"]["discord"]
 medal_path = config["Apps"]["medal"]
 vscode_path = config["Apps"]["vscode"]
+
+browser_config = config["Browser"]
+browser_type = browser_config["type"]
+debugging_port = browser_config["debugging_port"]
+browser_path = browser_config["paths"][browser_type]
+
+BROWSER_WINDOW_TITLES = {
+    "opera_gx": "Opera",
+    "chrome": "Chrome",
+    "firefox": "Firefox",
+    "edge": "Edge"
+}
+browser_title = BROWSER_WINDOW_TITLES[browser_type]
+
+DEVTOOLS_BROWSERS = ["opera_gx", "chrome"]
 
 sysUserName = os.getlogin()
 keyboard = KeyboardController()
@@ -96,55 +114,57 @@ def find_image_on_screen(template_path, threshold=0.8):
 
     return None
 
-
 def focus_or_open_spotify():
     open_or_focus_url("https://open.spotify.com")
 
+def get_browser_windows():
+    return [w for w in gw.getAllWindows() if browser_title in w.title]
 
-def get_opera_spotify_tab():
-    try:
-        tabs = requests.get("http://localhost:9222/json").json()
-        return next((t for t in tabs if "open.spotify.com" in t.get("url", "")), None)
-    except:
-        return None
+def open_browser_app():
+    windows = get_browser_windows()
 
-  
-def open_opera():
-    opera_windows = [w for w in gw.getAllWindows() if "Opera" in w.title]
-    
-    if opera_windows:
-        app = pywinauto.Application().connect(handle=opera_windows[0]._hWnd)
-        app.window(handle=opera_windows[0]._hWnd).set_focus()
+    if windows:
+        app = pywinauto.Application().connect(handle=windows[0]._hWnd)
+        app.window(handle=windows[0]._hWnd).set_focus()
     else:
-        subprocess.Popen(rf"C:\Users\{sysUserName}\AppData\Local\Programs\Opera GX\opera.exe --remote-debugging-port=9222")
-
+        if browser_type in DEVTOOLS_BROWSERS:
+            subprocess.Popen(f'"{browser_path}" --remote-debugging-port={debugging_port}')
+        else:
+            subprocess.Popen(f'"{browser_path}"')
 
 def open_or_focus_url(url: str, sleep_time: int = 6):
-    opera_windows = [w for w in gw.getAllWindows() if "Opera" in w.title]
+    windows = get_browser_windows()
 
-    if not opera_windows:
+    if not windows:
         webbrowser.open(url)
         time.sleep(sleep_time)
         return
 
-    try:
-        tabs = requests.get("http://localhost:9222/json").json()
-        tab = next((t for t in tabs if url in t.get("url", "")), None)
-    except:
-        tab = None
+    if browser_type in DEVTOOLS_BROWSERS:
+        try:
+            tabs = requests.get(f"http://localhost:{debugging_port}/json").json()
+            tab = next((t for t in tabs if url in t.get("url", "")), None)
+        except:
+            tab = None
 
-    if tab:
-        tab_title = tab.get("title", "")
-        opera_window = next((w for w in opera_windows if tab_title in w.title), None)
-
-        if opera_window:
-            app = pywinauto.Application().connect(handle=opera_window._hWnd)
-            app.window(handle=opera_window._hWnd).set_focus()
-            time.sleep(1)
+        if tab:
+            tab_title = tab.get("title", "")
+            browser_window = next((w for w in windows if tab_title in w.title), None)
+            if browser_window:
+                app = pywinauto.Application().connect(handle=browser_window._hWnd)
+                app.window(handle=browser_window._hWnd).set_focus()
+                time.sleep(1)
+                return
     else:
-        webbrowser.open_new_tab(url)
-        time.sleep(sleep_time)
+        for w in windows:
+            if url.replace("https://", "").replace("www.", "").split("/")[0] in w.title.lower():
+                app = pywinauto.Application().connect(handle=w._hWnd)
+                app.window(handle=w._hWnd).set_focus()
+                time.sleep(1)
+                return
 
+    webbrowser.open_new_tab(url)
+    time.sleep(sleep_time)
 
 def build_search_url(query: str, engine: str = "google") -> str:
     engines = {
@@ -154,7 +174,6 @@ def build_search_url(query: str, engine: str = "google") -> str:
     }
     base = engines.get(engine, engines["google"])
     return base + quote(query)
-
 
 def read_todos():
     try:
@@ -178,11 +197,10 @@ def tool(name):
         return func
     return wrapper
 
-
 # actions
 @tool("open_browser")
 def open_browser():
-    open_opera()
+    open_browser_app()
 
 @tool("open_youtube")
 def open_youtube():
@@ -390,7 +408,7 @@ def task():
         messages=[
             {
                 "role": "system",
-                "content": "You are a helpful assistant. The user will give you a TODO list with checkboxes. Read it and summarize only the incomplete tasks in a short, natural, spoken sentence. No bullet points, no lists — just talk."
+                "content": f"You are a helpful assistant. Always respond in: {language}. The user will give you a TODO list with checkboxes. Read it and summarize only the incomplete tasks in a short, natural, spoken sentence. No bullet points, no lists — just talk."
             },
             {
                 "role": "user",
@@ -473,8 +491,11 @@ def current_time():
     return f"It's {now.strftime('%H:%M')}, {now.strftime('%A, %B %d %Y')}"
 
 @tool("your_location")
-def your_location():
+def your_location(where: str = "github"):
     open_or_focus_url("https://github.com/bulekko/Jarvis", 0)
+    if where == "computer":
+        subprocess.Popen(javris_location)
+        
     return "Here."
 
 @tool("gesture_on")
@@ -487,14 +508,15 @@ def gesture_off():
 
 
 # AI prompt
-SYSTEM_PROMPT = """
-You are a system controller for a desktop AI assistant.
+SYSTEM_PROMPT = f"""
+{personality}
+Always respond in: {language}
 
 Return ONLY valid JSON array in this format:
 
 [
-  {"tool": "tool_name", "args": {}},
-  {"tool": "tool_name", "args": {}}
+  {{"tool": "tool_name", "args": {{}}}},
+  {{"tool": "tool_name", "args": {{}}}}
 ]
 
 Always return an array, even for single commands.
@@ -504,15 +526,16 @@ Available tools:
 - open_spotify
 - pause_music
 - play_music
-- exit_jarvis — closes Jarvis app.
+- exit_jarvis — closes Jarvis app. ONLY use when user explicitly says goodbye or wants to turn Jarvis off.
     Examples:
-    "goodbye jarvis" → [{"tool": "exit_jarvis", "args": {}}]
-    "turn yourself off" → [{"tool": "exit_jarvis", "args": {}}]
-    "bye" → [{"tool": "exit_jarvis", "args": {}}]
-- shutup ("tool": "shutup")
+    "goodbye jarvis" → [{{"tool": "exit_jarvis", "args": {{}}}}]
+    "turn yourself off" → [{{"tool": "exit_jarvis", "args": {{}}}}]
+    "bye jarvis" → [{{"tool": "exit_jarvis", "args": {{}}}}]
+    DO NOT use for: "thank you", "thanks", "ok", "good job", "thanks for watching!"
+- shutup (aka. "sleep", "shutup" → "tool": "shutup")
 - open_youtube
-- clip (aka. "Javis, clip that shit")
-- open_github ("tool": "open_github")
+- clip (aka. "Jarvis, clip that shit")
+- open_github
 - open_unityhub
 - open_medal
 - clear (aka. "clean it up")
@@ -520,22 +543,23 @@ Available tools:
 - open_vscode (aka. "open Visual Studio")
 - open_github_desktop
 - open_gaming_setup
-- open_coding_setup ("tool": "open_coding_setup")
+- open_coding_setup
 - open_unity_setup
 - search(query, engine) — search the web, engine can be "google", "youtube", "bing". Default is "google".
     Examples:
-    "search cats" → {"tool": "search", "args": {"query": "cats"}}
-    "search cats on youtube" → {"tool": "search", "args": {"query": "cats", "engine": "youtube"}}
-- task (when user says "what shoud I do?" or "what I have to do?" or "show me my tasks"  ---> "tool": "task")
+    "search cats" → {{"tool": "search", "args": {{"query": "cats"}}}}
+    "search cats on youtube" → {{"tool": "search", "args": {{"query": "cats", "engine": "youtube"}}}}
+- task (when user says "what should I do?" or "what I have to do?" or "show me my tasks")
 - complete_task(task) — mark a task as done
     Examples:
-    "mark buy milk as done" → {"tool": "complete_task", "args": {"task": "buy milk"}}
-    "I did buy milk" → {"tool": "complete_task", "args": {"task": "buy milk"}}
+    "mark buy milk as done" → {{"tool": "complete_task", "args": {{"task": "buy milk"}}}}
+    "I did buy milk" → {{"tool": "complete_task", "args": {{"task": "buy milk"}}}}
+    > Note: They are only samples, the user can say it in many different ways.
 - close_window (aka. "close this", "close current window")
 - close_app(name) — close a specific app
     Examples:
-    "close discord" → {"tool": "close_app", "args": {"name": "Discord"}}
-    "close spotify" → {"tool": "close_app", "args": {"name": "Spotify"}}
+    "close discord" → {{"tool": "close_app", "args": {{"name": "Discord"}}}}
+    "close spotify" → {{"tool": "close_app", "args": {{"name": "Spotify"}}}}
 - weather (aka. "what's the weather", "how's the weather today")
 - screenshot (aka. "take a screenshot", "screenshot")
 - time (aka. "what time is it", "what's the date", "what day is it")
@@ -543,13 +567,12 @@ Available tools:
 - gesture_off (aka. "disable gesture control", "hand control off")
 - your_location
     Examples:
-    "Where are you?" → {"tool": "your_location"}
-
+    "Where are you?" → {{"tool": "your_location"}}
+    "Where are you on my computer?" → {{"tool": "your_location", "args": {{"where": "computer"}}}}
 
 If no tool matches, return:
-[{"tool": "unknown", "args": {}}]
+[{{"tool": "unknown", "args": {{}}}}]
 """
-
 
 # AI brain
 def ask_model(text: str):
@@ -593,7 +616,6 @@ def execute(action_json: str):
             actions = [actions]
 
         executed_tools = []
-        tool_response = None
         threads = []
         results = {}
 
@@ -602,7 +624,6 @@ def execute(action_json: str):
             if result:
                 results[name] = result
 
-        threads = []
         for action in actions:
             tool_name = action.get("tool")
             args = action.get("args", {})
@@ -615,13 +636,10 @@ def execute(action_json: str):
         for t in threads:
             t.join()
 
-        tool_response = next(iter(results.values()), None)
-
         if not executed_tools:
             return "Tool not found"
 
-        if "task" in executed_tools:
-            tool_response = TOOLS["task"]()
+        tool_response = next(iter(results.values()), None)
 
         if tool_response:
             return tool_response
@@ -631,7 +649,7 @@ def execute(action_json: str):
             messages=[
                 {
                     "role": "system",
-                    "content": "You are Jarvis, a desktop AI assistant. The user gave a command and these tools were executed. Reply with one short, natural spoken sentence confirming what you did. No lists, no bullet points."
+                    "content": f"{personality} Always respond in: {language}. The user gave a command and these tools were executed. Reply with one short, natural spoken sentence confirming what you did. No lists, no bullet points."
                 },
                 {
                     "role": "user",
@@ -646,7 +664,7 @@ def execute(action_json: str):
         if debug:
             logging.debug(f"Execution error: {e}")
         return "Invalid AI response"
-
+    
 
 # main orchestrator
 def handle_command(text: str):
