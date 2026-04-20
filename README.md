@@ -144,7 +144,7 @@ Apps: # paths to your .exe files
 
 utils:
   debug: false
-  javris_location: "C:\Users\YOUR_USER_NAME\Jarvis"
+  javris_location: r"C:\Users\YOUR_USER_NAME\Jarvis"
 ```
 
 To find your microphone ID, run this in Python:
